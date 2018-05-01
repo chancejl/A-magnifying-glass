@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		.fdj{
+			display: inline-block;
+			width: 251px;
+			height: 280px;
+			vertical-align: top;
+			position: relative;
+		}
+		.fdj img{
+			width: 100%;
+			height: 100%;
+		}
+		.show{
+			overflow: hidden;
+			width: 350px;
+			height: 400px;
+			display: none;
+			position: relative;
+		}
+		/*蒙版样式*/
+		.fdj div{
+			width:100px;
+			height: 100px;
+			background:#999;
+			opacity: 0.7;
+			position: absolute;
+			left: 0;
+			top: 0;
+			display: none;
+		}
+	</style>
+</head>
+<body>
+	<!-- 放大镜区域 -->
+	<div class="fdj">
+		<!-- 图片 -->
+		<img src="timg.jpeg" alt="">	
+		<!-- 蒙版 -->
+		<div></div>
+	</div>
+	<!-- 展示区域 -->
+	<div class="show">
+		<!-- 展示大图 -->
+		<img src="timg.jpeg" alt="">
+	</div>
+	<script>
+		//获取元素
+		var fdj = document.querySelector('.fdj');
+		var smallImg = document.querySelector('.fdj img');
+		var mask = document.querySelector('.fdj div');
+		var bigImg = document.querySelector('.show img');
+		var show = document.querySelector('.show');
+
+		
+
+
+		//放大镜区域绑定鼠标事件
+		fdj.onmouseover = function(){
+			mask.style.display = 'block';
+			show.style.display = 'inline-block';
+
+			//计算fdj区域和show区域的宽高比
+		    var x = show.offsetWidth / mask.offsetWidth;
+		    var y = show.offsetHeight / mask.offsetHeight;
+
+
+		//计算大图的宽高
+		bigImg.style.width = smallImg.offsetWidth * x + 'px';
+		console.log(bigImg.style.width);
+		bigImg.style.height = smallImg.offsetHeight * y + 'px';
+
+			fdj.onmousemove = function(e){
+				var ev = e||window.event;
+				//根据鼠标的位置设置遮罩的位置
+				var left_ = ev.clientX - fdj.offsetLeft - mask.offsetWidth / 2;
+				var top_ = ev.clientY - fdj.offsetTop - mask.offsetHeight / 2;
+				//限制mask区域
+				if(left_ < 0){
+					left_ = 0;
+				}
+				if(left_ > fdj.offsetWidth - mask.offsetWidth){
+					left_ = fdj.offsetWidth - mask.offsetWidth;
+				}
+				if(top_ < 0){
+					top_ = 0;
+				}
+				if(top_ > fdj.offsetHeight - mask.offsetHeight){
+					top_ = fdj.offsetHeight - mask.offsetHeight;
+				}
+				mask.style.left = left_ + 'px';
+				mask.style.top = top_ + 'px';
+
+
+
+				//根据比例计算大图的位置
+				bigImg.style.position = 'absolute';
+				bigImg.style.left = -x * left_ + 'px';
+				bigImg.style.top = -y * top_ + 'px';
+			}
+
+		}
+		//添加鼠标移出事件
+		//不能直接只写鼠标移出事件，因为mask属于fdj的子级，就算鼠标移除fdj图片但是mask仍然跟随鼠标并且属于fdj子级相当于没有移出，需要限制mask区域
+		fdj.onmouseout = function(){
+			mask.style.display = 'none';
+			show.style.display = 'none';
+		}
+	</script>
+</body>
+</html>
